@@ -16,4 +16,4 @@ The `JAVA DEPENDENCIES` view allows you to manage your dependencies. More detail
 
 ##Main Method
 
-The program is called from the Payment
+The program is called from the CustomerPaymentWay Class file
