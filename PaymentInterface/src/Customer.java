@@ -2,43 +2,58 @@ import java.util.Scanner;
 
 interface Balance {
     void amount();
+
+    void transfer();
 }
 
-interface Debit extends Balance {
-    String debitTransfer();
-
+class Debit implements Balance {
     @Override
-    default void amount() {
+    public void amount() {
         System.out.println("Amount detected");
     }
-}
 
-interface Cash extends Balance {
-    String cashTransfer();
-
-    @Override
-    default void amount() {
-        System.out.println("Amount detected");
+    public void transfer() {
+        System.out.println("Amount withdraw from Debit Card");
     }
 }
 
-public class Customer implements Cash, Debit {
-    Scanner scannerObject = new Scanner(System.in);
-
-    @Override
-    public String cashTransfer() {
-        return "Cash Spent for Shopping";
-    }
-
-    @Override
-    public String debitTransfer() {
-        return "DebitCard used for Shopping";
+class Cash implements Balance {
+    public void transfer() {
+        System.out.println("Amount withdraw from Cash");
     }
 
     @Override
     public void amount() {
-        System.out.println("Amount Detected");
+        System.out.println("Amount detected");
     }
+}
+
+interface TransactionInterface {
+    void amount();
+
+    void transfer();
+}
+
+class Transaction implements TransactionInterface {
+    private Balance balance;
+
+    public Transaction(Balance balance) {
+        this.balance = balance;
+    }
+
+    @Override
+    public void amount() {
+        balance.amount();
+    }
+
+    @Override
+    public void transfer() {
+        balance.transfer();
+    }
+}
+
+public class Customer {
+    Scanner scannerObject = new Scanner(System.in);
 
     public boolean checkCashOrCardAvailability() {
         int cashOrDebit;
@@ -51,27 +66,19 @@ public class Customer implements Cash, Debit {
         }
     }
 
-    public Cash intitializeCard() {
-        Cash cashObject = new Customer();
-        return cashObject;
-    }
-
-    public Debit intitializeDebit() {
-        Debit debitObject = new Customer();
-        return debitObject;
-    }
-
     public static void main(String[] args) throws Exception {
         Customer customerObject = new Customer();
+        Balance cashObject = new Cash();
+        Balance debitObject = new Debit();
         boolean cashOrDebit = customerObject.checkCashOrCardAvailability();
         if (cashOrDebit) {
-            Cash cashObject = customerObject.intitializeCard();
-            System.out.println(cashObject.cashTransfer());
-            cashObject.amount();
+            TransactionInterface transactionObject = new Transaction(cashObject);
+            transactionObject.amount();
+            transactionObject.transfer();
         } else {
-            Debit debitObject = customerObject.intitializeDebit();
-            System.out.println(debitObject.debitTransfer());
-            debitObject.amount();
+            TransactionInterface transactionObject = new Transaction(debitObject);
+            transactionObject.amount();
+            transactionObject.transfer();
         }
     }
 }
